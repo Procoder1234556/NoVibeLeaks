@@ -46,13 +46,8 @@ No API keys are required to run secret and vibe scans. Live key validation uses 
 ## Maintainer: go live on the registry
 
 1. **Publish PyPI** (version must match `server.json`):
-
-   ```bash
-   cd secmcp
-   python -m pip install build twine
-   python -m build
-   python -m twine upload dist/*
-   ```
+   - One-time: [docs/PYPI_ONE_TIME_SETUP.md](./docs/PYPI_ONE_TIME_SETUP.md) (trusted publisher — no token in repo).
+   - Then: GitHub **Actions → Publish PyPI → Run workflow**.
 
 2. **Publish registry metadata** (GitHub namespace auth):
 
@@ -66,4 +61,4 @@ No API keys are required to run secret and vibe scans. Live key validation uses 
 
 3. Wait for marketplace sync (aggregators may cache up to ~1 hour).
 
-See also [docs/MCP_REGISTRY.md](./docs/MCP_REGISTRY.md).
+See also [docs/MCP_REGISTRY.md](./docs/MCP_REGISTRY.md) and **[docs/MCPMARKET.md](./docs/MCPMARKET.md)** (your [HUB connect](https://app.mcpmarket.com/p03490978/connect) link).
