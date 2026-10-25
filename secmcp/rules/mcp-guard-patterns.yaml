@@ -1,0 +1,36 @@
+# Extra high-confidence patterns (MIT mcp-guard scanner.py — vendor/mcp-guard)
+rules:
+  - name: postgres_url_in_source
+    severity: critical
+    category: secrets
+    pattern: 'postgres(?:ql)?://[^\s''"<>]+'
+    message: "Postgres connection URL with credentials found in source."
+    recommendation: "Move DATABASE_URL to environment; rotate password if exposed."
+
+  - name: pinecone_api_key_assignment
+    severity: high
+    category: secrets
+    pattern: '(?i)(pinecone(?:_api)?_key|PINECONE_API_KEY)\s*[:=]\s*[''"]?[A-Za-z0-9_-]{16,}'
+    message: "Pinecone API key assignment detected."
+    recommendation: "Use environment variables or a secret manager."
+
+  - name: firecrawl_api_key_assignment
+    severity: high
+    category: secrets
+    pattern: '(?i)(firecrawl(?:_api)?_key|FIRECRAWL_API_KEY)\s*[:=]\s*[''"]?[A-Za-z0-9_-]{16,}'
+    message: "Firecrawl API key assignment detected."
+    recommendation: "Use environment variables."
+
+  - name: qdrant_api_key_assignment
+    severity: high
+    category: secrets
+    pattern: '(?i)(qdrant(?:_api)?_key|QDRANT_API_KEY)\s*[:=]\s*[''"]?[A-Za-z0-9_-]{16,}'
+    message: "Qdrant API key assignment detected."
+    recommendation: "Use environment variables."
+
+  - name: generic_secret_assignment
+    severity: medium
+    category: secrets
+    pattern: '(?i)(?:[A-Za-z0-9_-]*(?:api[_-]?key|secret|password|passwd|pwd|token|access[_-]?token|auth[_-]?token)[A-Za-z0-9_-]*)\s*[:=]\s*[''"]?[A-Za-z0-9][A-Za-z0-9_./+=:@-]{11,}'
+    message: "Generic secret or password assignment detected."
+    recommendation: "Load from environment or a secret manager; never commit real values."

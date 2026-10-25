@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "novibeleaks": {
+      "command": "uvx",
+      "args": ["novibeleaks"]
+    },
+    "novibeleaks-dev": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "REPLACE_WITH_ABSOLUTE_PATH/NoVibeLeaks/secmcp",
+        "python",
+        "server.py"
+      ]
+    }
+  }
+}

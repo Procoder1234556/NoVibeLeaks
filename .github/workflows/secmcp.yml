@@ -1,0 +1,61 @@
+name: SecMCP Daily Scan
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  scan:
+    name: Repository scan + issue
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install SecMCP
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e "./secmcp"
+
+      - name: Run SecMCP repository scan
+        run: python scripts/scan_repository.py . --json --no-fail > scan-result.json
+
+      - name: Ensure issue labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label list --json name -q '.[].name' | grep -qx secmcp || \
+            gh label create secmcp --color "0F766E" --description "SecMCP scheduled scan"
+          gh label list --json name -q '.[].name' | grep -qx security || \
+            gh label create security --color "B91C1C" --description "Security"
+
+      - name: Open GitHub issue when findings exist
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          COUNT=$(python -c "import json; print(json.load(open('scan-result.json'))['count'])")
+          if [ "$COUNT" -eq 0 ]; then
+            echo "No findings; skipping issue."
+            exit 0
+          fi
+          python scripts/render_daily_issue.py scan-result.json \
+            --ref "${GITHUB_REF_NAME}" \
+            --sha "${GITHUB_SHA}" \
+            --title-out issue-title.txt \
+            --body-out issue-body.md
+          gh issue create \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "$(cat issue-title.txt)" \
+            --body-file issue-body.md \
+            --label "security" \
+            --label "secmcp"

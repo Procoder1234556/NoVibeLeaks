@@ -1,0 +1,195 @@
+from pathlib import Path
+
+from mcp_guard.scanner import scan_path
+
+
+def test_scan_detects_ai_and_database_secrets(tmp_path: Path) -> None:
+    sample = tmp_path / ".env"
+    sample.write_text(
+        "\n".join(
+            [
+                "OPENAI_API_KEY=sk-proj-abcdefghijklmnopqrstuvwxyz123456",
+                "ANTHROPIC_API_KEY=sk-ant-abcdefghijklmnopqrstuvwxyz123456",
+                "GITHUB_TOKEN=ghp_abcdefghijklmnopqrstuvwxyz123456",
+                "DATABASE_URL=postgresql://user:pass@example.com:5432/app",
+                "SUPABASE_URL=https://project-ref.supabase.co",
+                "SUPABASE_SERVICE_ROLE_KEY=eyJaaaaaaaaaaaaaaaaaaaaaa.eyJbbbbbbbbbbbbbbbbbbbbbb.cccccccccccccccccccccc",
+                "PINECONE_API_KEY=pc_abcdefghijklmnopqrstuvwxyz",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = scan_path(tmp_path)
+    kinds = {finding.kind for finding in result.findings}
+
+    assert result.files_scanned == 1
+    assert "OpenAI API key" in kinds
+    assert "Anthropic API key" in kinds
+    assert "GitHub token" in kinds
+    assert "Postgres URL" in kinds
+    assert "Supabase URL" in kinds
+    assert "Supabase anon/service key" in kinds
+    assert "Pinecone API key" in kinds
+    assert all(finding.severity for finding in result.findings)
+    assert any(finding.kind == "OpenAI API key" and finding.severity == "high" for finding in result.findings)
+    assert any(finding.kind == "Supabase URL" and finding.severity == "medium" for finding in result.findings)
+    assert all("abcdefghijklmnopqrstuvwxyz123456" not in finding.masked_secret for finding in result.findings)
+
+
+def test_scan_skips_ignored_directories(tmp_path: Path) -> None:
+    ignored = tmp_path / "node_modules"
+    ignored.mkdir()
+    (ignored / "package.js").write_text(
+        "const token = 'sk-proj-abcdefghijklmnopqrstuvwxyz123456';",
+        encoding="utf-8",
+    )
+    src = tmp_path / "src"
+    src.mkdir()
+    (src / "app.py").write_text("print('hello')", encoding="utf-8")
+
+    result = scan_path(tmp_path)
+
+    assert result.files_scanned == 1
+    assert result.findings == []
+
+
+def test_scan_flags_mcp_config_values(tmp_path: Path) -> None:
+    cursor = tmp_path / ".cursor"
+    cursor.mkdir()
+    config = cursor / "mcp.json"
+    config.write_text(
+        """
+        {
+          "mcpServers": {
+            "firecrawl": {
+              "command": "npx",
+              "env": {
+                "FIRECRAWL_API_KEY": "fc_abcdefghijklmnopqrstuvwxyz123456"
+              }
+            }
+          }
+        }
+        """,
+        encoding="utf-8",
+    )
+
+    result = scan_path(tmp_path)
+
+    assert any(finding.is_mcp_config for finding in result.findings)
+    assert any(finding.kind == "Firecrawl API key" for finding in result.findings)
+    assert all("fc_abcdefghijklmnopqrstuvwxyz123456" not in finding.masked_secret for finding in result.findings)
+
+
+def test_scan_detects_quoted_json_key_assignments(tmp_path: Path) -> None:
+    sample = tmp_path / "config.json"
+    sample.write_text(
+        """
+        {
+          "QDRANT_API_KEY": "qd_abcdefghijklmnopqrstuvwxyz123456",
+          "password": "correct-horse-battery-staple"
+        }
+        """,
+        encoding="utf-8",
+    )
+
+    result = scan_path(tmp_path)
+    kinds = {finding.kind for finding in result.findings}
+
+    assert "Qdrant API key" in kinds
+    assert "Generic secret assignment" in kinds
+    assert any(finding.kind == "Generic secret assignment" and finding.severity == "medium" for finding in result.findings)
+    assert all("correct-horse-battery-staple" not in finding.context for finding in result.findings)
+
+
+def test_scan_single_file_uses_file_name(tmp_path: Path) -> None:
+    sample = tmp_path / "settings.toml"
+    sample.write_text(
+        'perplexity_api_key = "pplx_abcdefghijklmnopqrstuvwxyz123456"',
+        encoding="utf-8",
+    )
+
+    result = scan_path(sample)
+
+    assert result.files_scanned == 1
+    assert result.findings[0].path == "settings.toml"
+    assert result.findings[0].line == 1
+
+
+def test_scan_respects_mcpguardignore(tmp_path: Path) -> None:
+    (tmp_path / ".mcpguardignore").write_text(
+        "\n".join(
+            [
+                "# Test fixtures intentionally use fake secrets.",
+                "tests/",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    tests = tmp_path / "tests"
+    tests.mkdir()
+    (tests / "test_fixture.py").write_text(
+        "OPENAI_API_KEY=sk-proj-abcdefghijklmnopqrstuvwxyz123456",
+        encoding="utf-8",
+    )
+    (tmp_path / ".env").write_text(
+        "ANTHROPIC_API_KEY=sk-ant-abcdefghijklmnopqrstuvwxyz123456",
+        encoding="utf-8",
+    )
+
+    result = scan_path(tmp_path)
+
+    assert result.files_skipped == 1
+    assert len(result.findings) == 1
+    assert result.findings[0].kind == "Anthropic API key"
+
+
+def test_scan_ignores_method_call_assignments(tmp_path: Path) -> None:
+    sample = tmp_path / "scanner.py"
+    sample.write_text("secret = secret.strip()\n", encoding="utf-8")
+
+    result = scan_path(tmp_path)
+
+    assert result.findings == []
+
+
+def test_scan_respects_inline_allow_comments(tmp_path: Path) -> None:
+    sample = tmp_path / ".env"
+    sample.write_text(
+        "\n".join(
+            [
+                "# mcp-guard: allow - fake local fixture",
+                "OPENAI_API_KEY=sk-proj-abcdefghijklmnopqrstuvwxyz123456",
+                "ANTHROPIC_API_KEY=sk-ant-abcdefghijklmnopqrstuvwxyz123456 # mcp-guard: ignore",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = scan_path(tmp_path)
+
+    assert result.findings == []
+
+
+def test_generic_detection_ignores_plain_urls(tmp_path: Path) -> None:
+    sample = tmp_path / "settings.env"
+    sample.write_text(
+        "DOCS_TOKEN=https://example.com/docs/not-a-secret",
+        encoding="utf-8",
+    )
+
+    result = scan_path(tmp_path)
+
+    assert result.findings == []
+
+
+def test_example_folder_scan_detects_fake_secrets() -> None:
+    example_dir = Path(__file__).parents[1] / "examples" / "unsafe-mcp-config"
+
+    result = scan_path(example_dir)
+    kinds = {finding.kind for finding in result.findings}
+
+    assert "OpenAI API key" in kinds
+    assert "Firecrawl API key" in kinds
+    assert len(result.findings) == 6
+    assert all(finding.severity in {"high", "medium", "low"} for finding in result.findings)

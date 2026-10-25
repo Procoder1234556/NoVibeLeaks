@@ -1,0 +1,17 @@
+---
+description: Autonomous implement-test loop from brain.md (Mode A)
+alwaysApply: true
+---
+
+# SecMCP autonomous loop
+
+When the user asks to **run the loop**, **implement next**, **Mode A**, or **Prompt O**:
+
+1. Open `prompts-directory-main/brain.md` and work the first ⏳ leftover.
+2. Waive T1 test sessions for brain L* items only; add pytest for new behavior.
+3. After each item: `pytest -q` in `secmcp/`, update `brain.md` + `IMPLEMENTATION_PLAN.md`.
+4. Continue to the next ⏳ in the **same session** until blocked or all done.
+
+Do not start Phase 3 web (`secmcp-web/`) unless the user explicitly requests L6.
+
+Default stack: Python MCP in `secmcp/`, YAML rules, five tools — no sixth tool without PRD change.

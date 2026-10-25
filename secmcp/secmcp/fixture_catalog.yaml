@@ -1,0 +1,15 @@
+# Known documentation / vendor example literals (leakferret catalog idea; YAML data only).
+# Apache-2.0 leakferret reference: vendor/leakferret/crates/leakferret-core/catalog/
+exact_literals:
+  - AKIAIOSFODNN7EXAMPLE
+  - wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+  - AIDAEXAMPLE
+  - sk_test_EXAMPLE_ONLY_NOT_A_REAL_STRIPE_KEY
+  - pk_test_EXAMPLE_ONLY_NOT_A_REAL_STRIPE_KEY
+line_markers:
+  - CHANGEME
+  - PLACEHOLDER
+  - your_api_key_here
+  - your-key-here
+  - xxxxxx
+  - "00000000000000000000000000000000"

@@ -1,0 +1,92 @@
+rules:
+  - name: openai_api_key
+    severity: critical
+    category: secrets
+    # Aligned with MIT mcp-guard SECRET_PATTERNS (vendor/mcp-guard/mcp_guard/scanner.py)
+    pattern: 'sk-(?!ant-)(?:proj-)?[A-Za-z0-9_-]{20,}'
+    message: "Hardcoded OpenAI API key detected. Move it to an environment variable and rotate the key."
+    recommendation: "Use OPENAI_API_KEY from the environment; rotate the exposed key in the OpenAI dashboard."
+
+  - name: aws_access_key_id
+    severity: critical
+    category: secrets
+    pattern: 'AKIA[0-9A-Z]{16}'
+    message: "AWS Access Key ID found in source code."
+    recommendation: "Remove the key, use IAM roles or secrets manager, and rotate the credential."
+
+  - name: github_pat
+    severity: critical
+    category: secrets
+    pattern: 'ghp_[a-zA-Z0-9]{36,}'
+    message: "GitHub personal access token found in source code."
+    recommendation: "Revoke the token on GitHub and load it from a secret store or CI variable."
+
+  - name: github_oauth
+    severity: critical
+    category: secrets
+    pattern: 'gho_[a-zA-Z0-9]{36,}'
+    message: "GitHub OAuth token found in source code."
+    recommendation: "Revoke the token and use environment-based configuration."
+
+  - name: stripe_secret_key
+    severity: critical
+    category: secrets
+    pattern: 'sk_live_[a-zA-Z0-9]{24,}'
+    message: "Stripe live secret key found in source code."
+    recommendation: "Rotate the key in Stripe Dashboard and use STRIPE_SECRET_KEY from the environment."
+
+  - name: stripe_test_secret
+    severity: high
+    category: secrets
+    pattern: 'sk_test_[a-zA-Z0-9]{24,}'
+    message: "Stripe test secret key hardcoded. Prefer environment variables even for test keys."
+    recommendation: "Move to .env (not committed) or CI secrets."
+
+  - name: anthropic_api_key
+    severity: critical
+    category: secrets
+    pattern: 'sk-ant-[A-Za-z0-9_-]{20,}'
+    message: "Hardcoded Anthropic API key detected."
+    recommendation: "Use ANTHROPIC_API_KEY from the environment and rotate the key."
+
+  - name: generic_private_key
+    severity: critical
+    category: secrets
+    pattern: '-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----'
+    message: "Private key material found in source code."
+    recommendation: "Remove the key from the repo, rotate, and store in a secrets manager."
+
+  - name: requests_verify_false
+    severity: high
+    category: configuration
+    pattern: 'verify\s*=\s*False'
+    message: "TLS certificate verification disabled (verify=False)."
+    recommendation: "Enable TLS verification; fix CA/cert issues instead of disabling verify."
+
+  - name: cors_allow_all
+    severity: medium
+    category: configuration
+    pattern: 'Access-Control-Allow-Origin[''"]?\s*:\s*[''"]\*[''"]'
+    message: "CORS allows any origin (*)."
+    recommendation: "Restrict allowed origins to known front-end domains."
+
+  - name: eval_usage
+    severity: high
+    category: code_quality
+    pattern: '\beval\s*\('
+    message: "Use of eval() — common in LLM-generated code and unsafe with untrusted input."
+    recommendation: "Replace with safe parsing (json.loads, ast.literal_eval for literals only)."
+
+  - name: exec_usage
+    severity: high
+    category: code_quality
+    pattern: '\bexec\s*\('
+    message: "Use of exec() detected."
+    recommendation: "Avoid dynamic code execution; use structured APIs instead."
+
+  - name: sql_string_concat
+    severity: high
+    category: code_quality
+    pattern: '(SELECT|INSERT|UPDATE|DELETE).*%s|f["''].*(SELECT|INSERT|UPDATE|DELETE)'
+    message: "Possible SQL built via string formatting (injection risk)."
+    recommendation: "Use parameterized queries / an ORM."
