@@ -1,5 +1,11 @@
 {
   "mcpServers": {
+    "mcpmarket": {
+      "url": "https://link.mcpmarket.com/mcp",
+      "headers": {
+        "Authorization": "Bearer ${env:MCPMARKET_API_KEY}"
+      }
+    },
     "novibeleaks": {
       "command": "uvx",
       "args": ["novibeleaks"]

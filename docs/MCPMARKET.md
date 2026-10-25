@@ -39,6 +39,36 @@ Private repos need [support@mcpmarket.com](mailto:support@mcpmarket.com).
 - [ ] PyPI: run GitHub **Publish PyPI** after [trusted publisher setup](./PYPI_ONE_TIME_SETUP.md)
 - [ ] Optional: [official MCP Registry](./MCP_REGISTRY.md) (`server.json`)
 
+## C. MCPmarket link in Cursor (API token)
+
+Use this to use **MCPmarket’s hosted MCP gateway** in Cursor (toolkits from their catalog), separate from listing NoVibeLeaks.
+
+1. In [MCPmarket HUB](https://app.mcpmarket.com) → **API Tokens** → create a token (shown once).
+2. Set a **user** environment variable (do not commit the key):
+
+   **Windows (PowerShell, persistent):**
+
+   ```powershell
+   [Environment]::SetEnvironmentVariable('MCPMARKET_API_KEY', 'YOUR_KEY', 'User')
+   ```
+
+   Restart Cursor so it picks up the variable (apps from the Dock/shell may not see one-off exports).
+
+3. Add to `%USERPROFILE%\.cursor\mcp.json`:
+
+   ```json
+   "mcpmarket": {
+     "url": "https://link.mcpmarket.com/mcp",
+     "headers": {
+       "Authorization": "Bearer ${env:MCPMARKET_API_KEY}"
+     }
+   }
+   ```
+
+See [Cursor MCP docs](https://docs.cursor.com/context/mcp).
+
+If a key was pasted into chat or a repo, **revoke it in MCPmarket and create a new token**.
+
 ## Copy-paste blurb for forms
 
 **Name:** NoVibeLeaks  
