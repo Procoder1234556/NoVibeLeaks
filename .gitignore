@@ -1,36 +1,21 @@
-﻿# Python
-__pycache__/
+﻿__pycache__/
 *.py[cod]
-*$py.class
-*.egg-info/
-.eggs/
-dist/
-build/
-.pytest_cache/
-
-# Virtual environments
 .venv/
 venv/
-
-# Node / Next.js
-node_modules/
-.next/
-out/
-playwright-report/
-test-results/
-
-# Environment & secrets
+dist/
+build/
+*.egg-info/
+.pytest_cache/
 .env
 .env.*
-!.env.example
 .cursor/mcp.json
 
-# OS / IDE
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-
-# Local / unrelated
+# Not part of the public MCP repo (local only)
+secmcp-web/
+node_modules/
+.next/
+prompts-directory-main/
+.agents/
+vendor/
+scripts/
 puneet_patwari_25_days_system_design_llm.txt

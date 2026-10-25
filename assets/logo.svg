@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="NoVibeLeaks">
+  <rect width="120" height="120" rx="24" fill="#0B1220"/>
+  <path d="M60 22 L88 38 V62 C88 82 60 98 60 98 C60 98 32 82 32 62 V38 Z" fill="none" stroke="#0F766E" stroke-width="4"/>
+  <path d="M48 58 L56 66 L74 48" fill="none" stroke="#34D399" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

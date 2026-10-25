@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320" role="img" aria-label="NoVibeLeaks architecture">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#0b1220"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="320" rx="16" fill="url(#bg)"/>
+  <text x="480" y="36" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="14">Agent loop</text>
+  <rect x="40" y="70" width="200" height="80" rx="12" fill="#1e293b" stroke="#334155"/>
+  <text x="140" y="105" text-anchor="middle" fill="#f8fafc" font-family="system-ui,sans-serif" font-size="15" font-weight="600">Cursor / Claude</text>
+  <text x="140" y="128" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="12">MCP host</text>
+  <path d="M240 110 H300" stroke="#0f766e" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="300" y="70" width="220" height="80" rx="12" fill="#134e4a" stroke="#0f766e"/>
+  <text x="410" y="105" text-anchor="middle" fill="#ecfdf5" font-family="system-ui,sans-serif" font-size="15" font-weight="600">NoVibeLeaks</text>
+  <text x="410" y="128" text-anchor="middle" fill="#99f6e4" font-family="system-ui,sans-serif" font-size="12">stdio MCP · 5 tools</text>
+  <path d="M520 110 H580" stroke="#0f766e" stroke-width="3"/>
+  <rect x="580" y="55" width="160" height="50" rx="10" fill="#1e293b" stroke="#475569"/>
+  <text x="660" y="85" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="13">secrets</text>
+  <rect x="580" y="115" width="160" height="50" rx="10" fill="#1e293b" stroke="#475569"/>
+  <text x="660" y="145" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="13">vibe_bugs</text>
+  <rect x="760" y="55" width="160" height="50" rx="10" fill="#1e293b" stroke="#475569"/>
+  <text x="840" y="85" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="13">api_keys</text>
+  <rect x="760" y="115" width="160" height="50" rx="10" fill="#1e293b" stroke="#475569"/>
+  <text x="840" y="145" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="13">YAML rules</text>
+  <rect x="300" y="200" width="360" height="72" rx="12" fill="#1e293b" stroke="#334155"/>
+  <text x="480" y="232" text-anchor="middle" fill="#f8fafc" font-family="system-ui,sans-serif" font-size="14" font-weight="600">Findings</text>
+  <text x="480" y="254" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="12">severity · file:line · fix guidance (no secret echo)</text>
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#0f766e"/>
+    </marker>
+  </defs>
+</svg>

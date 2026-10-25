@@ -1,17 +1,8 @@
-"""Phase 3 web payload sanitization."""
+"""Web/API payload sanitization (library)."""
 
 from __future__ import annotations
 
-import json
-import os
-import subprocess
-import sys
-from pathlib import Path
-
 from secmcp.web_payload import breakdown_for_storage, sanitize_finding, validate_upload_code
-
-REPO_ROOT = Path(__file__).resolve().parents[2]
-SCAN_SCRIPT = REPO_ROOT / "scripts" / "scan_snippet.py"
 
 
 def test_sanitize_finding_strips_raw_match():
@@ -43,21 +34,3 @@ def test_validate_upload_code_rejects_empty():
         assert False, "expected ValueError"
     except ValueError:
         pass
-
-
-def test_scan_snippet_script_detects_secret():
-    payload = json.dumps({"code": 'key = "sk-abcdefghijklmnopqrstuvwxyz123456"', "label": "t.py"})
-    proc = subprocess.run(
-        [sys.executable, str(SCAN_SCRIPT), "--stdin-json"],
-        input=payload,
-        capture_output=True,
-        text=True,
-        cwd=str(REPO_ROOT / "secmcp"),
-        env={**os.environ, "PYTHONPATH": str(REPO_ROOT / "secmcp")},
-        timeout=30,
-    )
-    assert proc.returncode == 0, proc.stderr
-    data = json.loads(proc.stdout)
-    assert data["overall_score"] < 100
-    assert data["finding_count"] >= 1
-    assert "storage_breakdown" in data
