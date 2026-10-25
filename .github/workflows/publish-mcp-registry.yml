@@ -1,0 +1,35 @@
+name: Publish MCP Registry
+
+# After novibeleaks is on PyPI, publish server.json to the official MCP Registry.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_pypi:
+        description: "PyPI has novibeleaks at the version in server.json"
+        required: true
+        type: boolean
+        default: false
+
+jobs:
+  publish:
+    if: inputs.confirm_pypi == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install mcp-publisher
+        run: npm install -g mcp-publisher@0.4.2
+
+      - name: Publish server.json
+        env:
+          MCP_PUBLISHER_TOKEN: ${{ secrets.MCP_PUBLISHER_TOKEN }}
+        run: |
+          if [ -z "$MCP_PUBLISHER_TOKEN" ]; then
+            echo "Add MCP_PUBLISHER_TOKEN repo secret (from: mcp-publisher login github)"
+            exit 1
+          fi
+          mcp-publisher publish ./server.json

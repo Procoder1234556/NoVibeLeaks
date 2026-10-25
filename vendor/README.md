@@ -5,8 +5,8 @@ Cloned for research and selective integration into **SecMCP** (see `prompts-dire
 | Repo | License | Role in SecMCP plan |
 |------|---------|---------------------|
 | [chiragborse1/mcp-guard](mcp-guard/) | MIT | MCP config + extra secret patterns → ported into `secmcp/mcp_config.py` |
-| [leakferrethq/leakferret](leakferret/) | Apache-2.0 | Reference for verify/rewrite/baseline; optional sidecar later (Rust binary) |
+| [leakferrethq/leakferret](https://github.com/leakferrethq/leakferret) | Apache-2.0 | Upstream reference (not vendored in git — avoids secret-scan false positives) |
 
 Do not commit real secrets from `mcp-guard/examples/unsafe-mcp-config/`.
 
-Update clones: `git -C vendor/mcp-guard pull` / `git -C vendor/leakferret pull`
+Update mcp-guard: `git -C vendor/mcp-guard pull`

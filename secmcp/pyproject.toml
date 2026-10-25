@@ -5,6 +5,7 @@ description = "NoVibeLeaks — MCP security: secrets, API keys, and vibe-coding 
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
+license-files = ["LICENSE"]
 authors = [{ name = "NoVibeLeaks Contributors" }]
 keywords = ["mcp", "security", "secrets", "cursor", "model-context-protocol", "static-analysis"]
 classifiers = [
