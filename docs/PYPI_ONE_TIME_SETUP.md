@@ -9,9 +9,8 @@ Required before **Publish PyPI** or **Release** workflows can upload `novibeleak
    - **Owner:** `Procoder1234556`
    - **Repository:** `NoVibeLeaks`
    - **Workflow name:** `publish-pypi.yml`
-   - **Environment name:** `pypi` (optional but matches our workflow)
-4. In GitHub repo **Settings → Environments**, create environment **`pypi`** (if using environment name above).
-5. Run workflow: **Actions → Publish PyPI → Run workflow**.
+   - **Environment name:** leave **empty** (our workflow does not use a GitHub environment).
+4. Run workflow: **Actions → Publish PyPI → Run workflow**.
 
 Then publish MCP Registry metadata (local):
 

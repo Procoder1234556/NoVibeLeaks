@@ -5,14 +5,13 @@ on:
     tags:
       - "v*"
 
-permissions:
-  contents: read
-  id-token: write
-
 jobs:
-  pypi:
-    name: Publish to PyPI
+  pypi-publish:
+    name: Upload novibeleaks to PyPI
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -20,17 +19,13 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install build tools
-        run: pip install build twine
-
-      - name: Build wheel
+      - name: Build package
         working-directory: secmcp
-        run: python -m build
+        run: |
+          pip install build
+          python -m build
 
-      - name: Publish to PyPI
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        working-directory: secmcp
-        run: python -m twine upload dist/*
-
+      - name: Publish to PyPI (trusted publishing)
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: secmcp/dist/
